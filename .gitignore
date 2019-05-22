@@ -13,8 +13,8 @@ tmp
 temp
 
 # dependencies
-node_modules/
+node_modules
 
 #
-secrets/
+secrets
 

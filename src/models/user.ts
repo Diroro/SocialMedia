@@ -1,7 +1,22 @@
 export interface IUser {
   id?: number;
-  nickname: string;
-  name: string;
+  username: string;
+  name?: string;
   description?: string;
-  posts_count?: number;
+  postsCount?: number;
+  passwordHash: string; // @TODO сделать ли его обязательным
+  sessionId?: string;
+}
+
+// export class DBUser {
+
+// }
+
+// export class User {
+
+// }
+
+export interface IUserAuth {
+  username: string;
+  password: string;
 }
