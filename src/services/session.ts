@@ -15,11 +15,11 @@ class Session {
   }
 
   public static parse(sessionString: string) {
-    const sessionData = sessionString.split(SEPARATOR);
+    const [username, id, sessionHash] = sessionString.split(SEPARATOR);
     return {
-      username: sessionData[0],
-      id: sessionData[1],
-      sessionHash: sessionData[2],
+      username,
+      id,
+      sessionHash,
     };
   }
 
@@ -32,8 +32,8 @@ class Session {
 
   public static sessionString(accountData: IAccountData): string {
     const { username, id } = accountData;
-    const accData = Session.accountData({ username, id });
-    return `${accData}${SEPARATOR}${hash(accData)}`;
+    const accDataString = Session.accountData({ username, id });
+    return `${accDataString}${SEPARATOR}${hash(accDataString)}`;
   }
 
   public id: string;

@@ -4,15 +4,21 @@ import UserTable from '../services/user';
 
 const setSessionCookie = ({ sessionString, res }: { sessionString: string, res: Response }) => {
   res.cookie('sessionString', sessionString, {
-    expires: new Date(Date.now() + 3600000),
+    expires: new Date(Date.now() + 3600000), // @TODO move to const
     httpOnly: true,
     // secure: true, // used with https
   });
 };
 
-export const setSession = async ({ username, res, sessionId }: { username: string, res: Response, sessionId?: string }) => {
-  let session;
-  let sessionString;
+interface ISetSession {
+  username: string;
+  res: Response;
+  sessionId?: string;
+}
+
+export const setSession = async ({ username, res, sessionId }: ISetSession) => {
+  let session: Session;
+  let sessionString: string;
 
   if (sessionId) {
     sessionString = Session.sessionString({ username, id: sessionId });

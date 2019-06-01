@@ -11,6 +11,18 @@ export class SuccessResponse implements IResponse {
   }
 }
 
+export class SuccessAddResponse extends SuccessResponse {
+
+}
+
+export class SuccessModifyResponse extends SuccessResponse {
+
+}
+
+export class SuccessDeleteResponse extends SuccessResponse {
+
+}
+
 export class ErrorResponse implements IResponse {
   public message: string;
 

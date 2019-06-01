@@ -3,10 +3,11 @@ export interface IUser {
   username: string;
   name?: string;
   description?: string;
-  postsCount?: number;
   passwordHash: string; // @TODO сделать ли его обязательным
   sessionId?: string;
 }
+
+// @TODO may be validations in class
 
 // export class DBUser {
 

@@ -1,9 +1,8 @@
 CREATE TABLE users(
     id      SERIAL PRIMARY KEY,
-    username CHARACTER(64) NOT NULL,
+    username CHARACTER(64) NOT NULL UNIQUE,
     "passwordHash" CHARACTER(64) NOT NULL,
     name CHARACTER(64),
     description CHARACTER(255),
-    posts_count INTEGER,
     "sessionId" CHARACTER(36)
 );

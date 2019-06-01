@@ -4,7 +4,8 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "configure_db": "./src/sql/configure_db.sh",
+    "configure_db": "./sql/configure_db.sh",
+    "migrate": "./sql/migration.sh",
     "watch": "node -r ts-node/register ./src/index.ts",
     "start": "nodemon",
     "prebuild": "tslint -c tslint.json -p tsconfig.json --fix",

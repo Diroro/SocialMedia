@@ -2,7 +2,8 @@ import { Response, NextFunction, Application, Request } from 'express';
 import { ApiError } from '../models/errors';
 
 export const sendApiError = (err: ApiError, req: Request, res: Response, next: NextFunction) => {
-  res.status(err.statusCode || 500).json({
+  console.error(err);
+  res.status(err.statusCode).json({
     type: 'error', message: err.message
   });
 };

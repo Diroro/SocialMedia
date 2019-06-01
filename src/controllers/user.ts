@@ -20,7 +20,6 @@ export const getUsers = async (req: Request, res: Response, next: NextFunction):
     return res.json(users);
 
   } catch (err) {
-    console.log('CATCHED ERROR IN USERS');
     next(err);
   }
 };
