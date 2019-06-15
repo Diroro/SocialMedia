@@ -8,11 +8,11 @@ class UserTable {
       const data = await dbPool.query(`
         INSERT INTO users(username, "passwordHash")
             VALUES( $[username], $[passwordHash])
-            RETURNING id;
+            RETURNING id, username, name, description;
         `,
         { ...user });
-
-      return data[0].id;
+      console.log('ADDING USER: ', data);
+      return data[0];
     } catch (err) {
       // throw new DB ERROR
       throw new ApiError('Something went wrong');

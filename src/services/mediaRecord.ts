@@ -1,8 +1,17 @@
 import { dbPool } from './databasePool';
 import { IMediaRecord } from '../models/mediaRecord';
 import { ApiError, ForbiddenException } from '../models/errors';
-import { Request } from 'express';
-import Session from './session';
+// import { Request } from 'express';
+// import Session from './session';
+import { DEFAULT_LIMIT } from '../utils/appConsts';
+import { IPaginationResponse } from '../models/response';
+
+interface IQueryParams {
+  where: string;
+  orderBy: string;
+  limit: number;
+  offset: number;
+}
 
 class MediaRecordTable {
   public static async addMediaRecord(mediaRecord: IMediaRecord): Promise<number> {
@@ -40,7 +49,7 @@ class MediaRecordTable {
           "dateModified",
           TRIM("authorUsername") as "authorUsername"
         FROM media_records
-        WHERE id  = $1
+        WHERE id = $1
       `,
         id
       );
@@ -50,23 +59,55 @@ class MediaRecordTable {
     }
   }
 
-  public static async getMediaRecords(username: string): Promise<IMediaRecord[]> {
+  public static async getMediaRecords(
+    username: string, limit: string, offset: string
+    ): Promise<IPaginationResponse<IMediaRecord>> {
+
     try {
-      let query: string = `
-      SELECT
-        id,
-        TRIM(description) as description,
-        TRIM(url) as url,
-        "dateCreated",
-        "dateModified",
-        TRIM("authorUsername") as "authorUsername"
-      FROM media_records
-      `;
+      const queryParams: IQueryParams = {
+        where: null,
+        orderBy: 'id',
+        limit: +limit || DEFAULT_LIMIT,
+        offset: +offset || 0,
+      };
+
       if (username) {
-        query += ' WHERE "authorUsername" = $1';
+        queryParams.where = `WHERE "authorUsername" = $[username]`;
+        Object.assign(queryParams, { username });
       }
-      const mediaRecords = await dbPool.query(query, username);
-      return mediaRecords;
+
+      const query = `
+        SELECT
+          id,
+          TRIM(description) as description,
+          TRIM(url) as url,
+          "dateCreated",
+          "dateModified",
+          TRIM("authorUsername") as "authorUsername"
+        FROM media_records
+        ${queryParams.where || ''}
+        ORDER BY $[orderBy~]
+        LIMIT $[limit]
+        OFFSET $[offset];
+      `;
+
+      const mediaRecords = await dbPool.query(
+        query,
+        queryParams
+      );
+
+      const count = await dbPool.query(`
+        SELECT count(*) FROM media_records
+        ${queryParams.where || ''};`,
+        queryParams
+      );
+
+      return {
+        items: mediaRecords,
+        count: +count[0].count,
+        limit: queryParams.limit,
+        offset: queryParams.offset
+      };
     } catch (err) {
       throw new ApiError('Something went wrong');
     }

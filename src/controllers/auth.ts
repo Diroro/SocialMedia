@@ -17,6 +17,7 @@ export const signIn = async (req: Request, res: Response, next: NextFunction): P
       const { sessionId } = user;
       const { message } = await setSession({ username, res, sessionId });
       res.json({ message });
+      // @TODO user info here and after sign up
 
     } else {
       throw new BadRequestException('Incorrect username/password');
@@ -33,9 +34,9 @@ export const signUp = async (req: Request, res: Response, next: NextFunction): P
     const user = await UserTable.getUserAuthDataByUsername(username);
     if (!user) {
       const passwordHash = hash(password);
-      const id = await UserTable.addUser({ username, passwordHash });
+      const data = await UserTable.addUser({ username, passwordHash });
       const { message } = await setSession({ username, res });
-      res.json({ message, data: { username, id } });
+      res.json({ message, data });
 
     } else {
       throw new BadRequestException('This username is already existed');

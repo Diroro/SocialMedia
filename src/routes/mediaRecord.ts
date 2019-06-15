@@ -4,8 +4,9 @@ import {
   getMediaRecords,
   deleteMediaRecord,
   editMediaRecord,
-  // likeMediaRecord,
-  // unlikeMediaRecord
+  likeMediaRecord,
+  unlikeMediaRecord,
+  getRecordLikes
 } from '../controllers/mediaRecord';
 import { authValidator } from '../controllers/auth';
 import { API_CONST } from '../utils/appConsts';
@@ -30,6 +31,7 @@ export const register = (app: Application) => {
     app.put(`${API_CONST}/media-records/:id`, authValidator, editMediaRecord);
     app.delete(`${API_CONST}/media-records/:id`, authValidator, deleteMediaRecord);
 
-    // app.put(`${API_CONST}/media-records/:id/like`, authValidator, likeMediaRecord);
-    // app.delete(`${API_CONST}/media-records/:id/like`, authValidator, unlikeMediaRecord);
+    app.put(`${API_CONST}/media-records/:id/like`, authValidator, likeMediaRecord);
+    app.delete(`${API_CONST}/media-records/:id/like`, authValidator, unlikeMediaRecord);
+    app.get(`${API_CONST}/media-records/:id/likes`, authValidator, getRecordLikes);
 };

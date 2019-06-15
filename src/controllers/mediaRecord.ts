@@ -3,6 +3,7 @@ import MediaRecordTable from '../services/MediaRecord';
 import { IMediaRecord } from '../models/mediaRecord';
 import Session from '../services/session';
 import { checkUsernameAuthor } from '../utils/referenceHelper';
+import LikeTable from '../services/like';
 
 export const addMediaRecord = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
   try {
@@ -31,14 +32,15 @@ export const getMediaRecords = async (req: Request, res: Response, next: NextFun
     // check the params
     // if no: my or all?
     // if yes: ?username=...
+
     const { sessionString } = req.cookies;
-    const { username: authorName } = req.query;
+    const { username: authorName, limit, offset } = req.query;
 
     const { username } = Session.parse(sessionString);
 
-    const MediaRecords = await MediaRecordTable.getMediaRecords(authorName || username);
-    // @TODO remove password
-    return res.json(MediaRecords);
+    const mediaRecords = await MediaRecordTable.getMediaRecords(authorName || username, limit, offset);
+
+    return res.json(mediaRecords);
 
   } catch (err) {
     next(err);
@@ -73,7 +75,6 @@ export const deleteMediaRecord = async (req: Request, res: Response, next: NextF
 
 export const editMediaRecord = async (req: Request, res: Response, next: NextFunction) => {
   try {
-
     const { id } = req.params;
 
     const { sessionString } = req.cookies;
@@ -90,6 +91,44 @@ export const editMediaRecord = async (req: Request, res: Response, next: NextFun
 
     const updatedRecord = await MediaRecordTable.updateMediaRecord(mediaRecord);
     return res.json(updatedRecord);
+
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const likeMediaRecord = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { sessionString } = req.cookies;
+
+    const { username: authorUsername } = Session.parse(sessionString);
+    const { id: recordId } = req.params;
+    const like = await LikeTable.like({ recordId, authorUsername });
+    return res.json(like);
+
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const unlikeMediaRecord = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { sessionString } = req.cookies;
+    const { username: authorUsername } = Session.parse(sessionString);
+    const { id: recordId } = req.params;
+    await LikeTable.unlike({ recordId, authorUsername });
+    return res.json({ recordId });
+
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getRecordLikes = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id: recordId } = req.params;
+    await LikeTable.getRecordLikes(recordId);
+    return res.json({ recordId });
 
   } catch (err) {
     next(err);
